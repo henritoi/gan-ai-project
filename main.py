@@ -3,6 +3,7 @@
     GAN Project
 """
 import argparse
+from dataloader import Dataloader
 
 print("""\
      ██████╗██╗   ██╗ ██████╗██╗     ███████╗ ██████╗  █████╗ ███╗   ██╗

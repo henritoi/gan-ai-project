@@ -2,6 +2,7 @@ import scipy
 import imageio
 from glob import glob
 import numpy as np
+from progress import Progress
 
 class ImageLoader():
     def __init__(self, name, resolution=(128, 128)):
@@ -16,7 +17,9 @@ class ImageLoader():
 
         images = []
 
-        for image_path in batch_images:
+        progress = Progress(len(batch_size))
+
+        for index, image_path in enumerate(batch_images, start=1):
             image = self.read_image(image_path)
             if not test:
                 image = scipy.misc.imresize(image, self.resolution)
@@ -28,6 +31,9 @@ class ImageLoader():
                 image = scipy.misc.imresize(image, self.resolution)
 
             images.append(image)
+            progress.update(index, 'Loading images')
+
+        progress.stop()
 
         images = np.array(images) / 127.5 - 1.
 
@@ -45,9 +51,11 @@ class ImageLoader():
         path_A = np.random.choice(path_A, total_samples, replace=False)
         path_B = np.random.choice(path_B, total_samples, replace=False)
 
-        for i in range(self.number_of_batches - 1):
-            batch_A = path_A[i*batch_size: (i + 1) * batch_size]
-            batch_B = path_B[i*batch_size: (i + 1) * batch_size]
+        progress = Progress(number_of_batches - 1)
+
+        for index in range(self.number_of_batches - 1):
+            batch_A = path_A[index*batch_size: (i + 1) * batch_size]
+            batch_B = path_B[index*batch_size: (i + 1) * batch_size]
             images_A, images_B = [], []
             for image_A, image_B in zip(batch_A, batch_B):
                 imageA = self.imread(image_A)
@@ -66,7 +74,10 @@ class ImageLoader():
             imgs_A = np.array(imgs_A)/127.5 - 1.
             imgs_B = np.array(imgs_B)/127.5 - 1.
 
+            progress.update(index, 'Loading images')
+
             yield images_A, images_B
+        progress.stop()
 
     def read_image(self, path):
         return imageio.imread(path, pilmode='RGB').astype(np.float)
