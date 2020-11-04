@@ -4,9 +4,41 @@ if [ ! -d "datasets" ]; then
     mkdir datasets
 fi
 
+
+if [ ! -d "datasets/train" ]; then
+    mkdir -p datasets/train
+fi
+
 if [ ! -d "datasets/final" ]; then
     mkdir -p datasets/final
 fi
+
+declare -a training_sets=(
+    "ae_photos"
+    "apple2orange"
+    "summer2winter_yosemite"
+    "horse2zebra"
+    "monet2photo"
+    "cezanne2photo"
+    "ukiyoe2photo"
+    "vangpgh2photo"
+    "maps"
+    "facades"
+    "iphone2dslr_flower"
+)
+
+
+for i in "${training_sets[@]}"
+do
+    URL=https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/$i.zip
+    ZIP=./datasets/train/$i.zip
+    TARGET=./datasets/train/
+
+    wget $URL -P $TARGET
+
+    unzip $ZIP -d $TARGET
+    rm $ZIP
+done
 
 declare -a final_data=(
     "https://kuopio.kuvat.fi/kuvat/JULKINEN+KUVAPANKKI/Veljmies2014-VicenteSerra-06.jpg"
