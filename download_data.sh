@@ -4,6 +4,10 @@ if [ ! -d "datasets" ]; then
     mkdir datasets
 fi
 
+if [ ! -d "datasets/final" ]; then
+    mkdir -p datasets/final
+fi
+
 declare -a final_data=(
     "https://kuopio.kuvat.fi/kuvat/JULKINEN+KUVAPANKKI/Veljmies2014-VicenteSerra-06.jpg"
     "https://kuopio.kuvat.fi/kuvat/JULKINEN+KUVAPANKKI/Puijon+mets%C3%A42010-VicenteSerra-035.jpg"
@@ -69,5 +73,6 @@ declare -a final_data=(
 
 for i in "${final_data[@]}"
 do
-    echo "$i"
+    wget "$i" -P datasets/final/
 done
+
