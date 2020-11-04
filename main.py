@@ -23,14 +23,14 @@ def main():
 
 def _execute_command(command):
     if command == 'train':
-        train()
+        _train()
     elif command == 'test':
-        test()
+        _test()
 
-def train():
+def _train():
     print('Train')
 
-def test():
+def _test():
     print('Test')
 
 if __name__ == '__main__':
