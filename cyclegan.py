@@ -23,7 +23,7 @@ from PIL import Image
 
 from glob import glob
 
-'''Lähin kirjottamaan tätä nyt käyttäen esimerkkinä tuota copypaste koodia'''
+# Lähin kirjottamaan tätä nyt käyttäen esimerkkinä tuota copypaste koodia
 
 
 class CycleGan():
