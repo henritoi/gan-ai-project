@@ -189,22 +189,22 @@ class CycleGan():
                     print("Epoch: %d / %d" % (
                     epoch, epochs))
 
-                if epoch % saving_interval == 0:
-                    self.epoch = epoch
-                    path = "saved_model/" + self.data_name + "/epoch_" + str(self.epoch)
-                    if not os.path.exists(path):
-                        os.makedirs(path)
-                    self.disc_A.save_weights(path + "/discriminatorA_weights.h5")
-                    self.disc_B.save_weights(path + "/discriminatorA_weights.h5")
-                    self.disc_A.save(path + "/discriminatorA_model.h5")
-                    self.disc_B.save(path + "/discriminatorB_model.h5")
+            if epoch % saving_interval == 0:
+                self.epoch = epoch
+                path = "saved_model/" + self.data_name + "/epoch_" + str(self.epoch)
+                if not os.path.exists(path):
+                    os.makedirs(path)
+                self.disc_A.save_weights(path + "/discriminatorA_weights.h5")
+                self.disc_B.save_weights(path + "/discriminatorA_weights.h5")
+                self.disc_A.save(path + "/discriminatorA_model.h5")
+                self.disc_B.save(path + "/discriminatorB_model.h5")
 
-                    self.generate_AB.save(path + "/generatorAB_model.h5")
-                    self.generate_BA.save(path + "/generatorBA_model.h5")
-                    self.generate_AB.save_weights(path + "/generatorAB_weights.h5")
-                    self.generate_BA.save_weights(path + "/generatorBA_weights.h5")
-                if epoch % sample_interval == 0:
-                    self.create_samples(epoch)
+                self.generate_AB.save(path + "/generatorAB_model.h5")
+                self.generate_BA.save(path + "/generatorBA_model.h5")
+                self.generate_AB.save_weights(path + "/generatorAB_weights.h5")
+                self.generate_BA.save_weights(path + "/generatorBA_weights.h5")
+            if epoch % sample_interval == 0:
+                self.create_samples(epoch)
 
         self.epoch = "finished"
         path = "saved_model/" + self.data_name + "/epoch_" + str(self.epoch)
@@ -220,8 +220,8 @@ class CycleGan():
         self.generate_AB.save_weights(path + "/generatorAB_weights.h5")
         self.generate_BA.save_weights(path + "/generatorBA_weights.h5")
 
-    def test(self):
-        path = "saved_model/" + self.data_name + "/epoch_" + str(self.epoch)
+    def test(self, epoch):
+        path = "saved_model/" + self.data_name + "/epoch_" + str(epoch)
         if not os.path.exists(path):
             return ("No such path: %s exists" % path)
         self.disc_A = load_model(path + "/discriminatorA_model.h5")
