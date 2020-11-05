@@ -37,9 +37,9 @@ def main():
         if selection.lower() == 'y':
             __initialize_data()
 
-    __execute_command(args.execute, args.dataset)
+    __execute_command(args.method, args.dataset, epochs=args.epochs)
 
-def __execute_command(command=None, dataset=None):
+def __execute_command(command=None, dataset=None, epochs=250):
     if command == None:
         command = __get_command_selection()
 
@@ -57,15 +57,15 @@ def __execute_command(command=None, dataset=None):
                 dataset = __get_dataset_selection()
 
     if command == 'train':
-        __train(dataset)
+        __train(dataset, epochs=epochs)
 
     elif command == 'test':
         __test(dataset)
 
-def __train(dataset):
+def __train(dataset, epochs=250):
     print('Train with %s' % (dataset.capitalize()))
     gan = CycleGan(dataset)
-    gan.train(epochs=90, batch_size=1, sample_interval=1, saving_interval=30)
+    gan.train(epochs=epochs, batch_size=1, sample_interval=1, saving_interval=30)
     print("Training complete")
 def __test(dataset):
     print('Test with %s' % (dataset.capitalize()))
@@ -79,7 +79,8 @@ def __initialize_data():
 def __initialize_args():
     parser = argparse.ArgumentParser(description='CycleGAN')
     __add_boolean_arg(parser, 'list', help='List downloaded datasets')
-    parser.add_argument('-e', dest='execute', help='Select metdod to be used')
+    parser.add_argument('-m', dest='method', help='Select metdod to be used')
+    parser.add_argument('-e', dest='epochs', type=int, help='Number of epochs', default=250)
     parser.add_argument('--data', dest='dataset', help='Select dataset to be used')
     __add_boolean_arg(parser, 'init', help='Download the training data and pictures of Kuopio')
 
