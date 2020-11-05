@@ -4,6 +4,7 @@ from glob import glob
 import numpy as np
 from progress import Progress
 
+
 class ImageLoader():
     def __init__(self, name, resolution=(128, 128)):
         self.name = name
@@ -23,7 +24,7 @@ class ImageLoader():
             image = self.read_image(image_path)
             if not test:
                 image = scipy.misc.imresize(image, self.resolution)
-                
+
                 if np.random.random() > 0.5:
                     image = np.fliplr(image)
 
@@ -40,7 +41,7 @@ class ImageLoader():
         return images
 
     def load_batch(self, batch_size=1, test=False):
-    	data_type = "train" if not is_testing else "val"
+        data_type = "train" if not is_testing else "val"
 
         path_A = glob('./datasets/train/%s/%sA/*' % (self.dataset_name, data_type))
         path_B = glob('./datasets/train/%s/%sB/*' % (self.dataset_name, data_type))
@@ -54,8 +55,8 @@ class ImageLoader():
         progress = Progress(number_of_batches - 1)
 
         for index in range(self.number_of_batches - 1):
-            batch_A = path_A[index*batch_size: (i + 1) * batch_size]
-            batch_B = path_B[index*batch_size: (i + 1) * batch_size]
+            batch_A = path_A[index * batch_size: (i + 1) * batch_size]
+            batch_B = path_B[index * batch_size: (i + 1) * batch_size]
             images_A, images_B = [], []
             for image_A, image_B in zip(batch_A, batch_B):
                 imageA = self.imread(image_A)
@@ -65,14 +66,14 @@ class ImageLoader():
                 image_B = scipy.misc.imresize(image_B, self.resolution)
 
                 if not test and np.random.random() > 0.5:
-                        image_A = np.fliplr(image_A)
-                        image_B = np.fliplr(image_B)
+                    image_A = np.fliplr(image_A)
+                    image_B = np.fliplr(image_B)
 
                 images_A.append(image_A)
                 images_B.append(image_B)
 
-            imgs_A = np.array(imgs_A)/127.5 - 1.
-            imgs_B = np.array(imgs_B)/127.5 - 1.
+            imgs_A = np.array(imgs_A) / 127.5 - 1.
+            imgs_B = np.array(imgs_B) / 127.5 - 1.
 
             progress.update(index, 'Loading images')
 
@@ -88,4 +89,3 @@ class ImageLoader():
         image = image / 256.5 - 1.
 
         return image[np.newaxis, :, :, :]
-

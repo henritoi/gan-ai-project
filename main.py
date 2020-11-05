@@ -6,6 +6,7 @@ import argparse
 import subprocess
 from input_helper import InputHelper
 import os
+from cyclegan import CycleGan
 
 print("""\n\
      ██████╗██╗   ██╗ ██████╗██╗     ███████╗ ██████╗  █████╗ ███╗   ██╗
@@ -63,10 +64,14 @@ def __execute_command(command=None, dataset=None):
 
 def __train(dataset):
     print('Train with %s' % (dataset.capitalize()))
-
+    gan = CycleGan(dataset)
+    gan.train(epochs=90, batch_size=1, sample_interval=1, saving_interval=30)
+    print("Training complete")
 def __test(dataset):
     print('Test with %s' % (dataset.capitalize()))
-
+    gan = CycleGan(dataset)
+    gan.test()
+    print("Testing complete")
 def __initialize_data():
     print('Downloading the training datasets...')
     subprocess.call(['./download_data.sh'])
