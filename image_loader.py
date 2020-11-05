@@ -12,7 +12,7 @@ class ImageLoader():
 
     def load_images(self, domain, batch_size=1, test=False):
         data_type = "train%s" % domain if not test else "test%s" % domain
-        path = glob('./datasets/train/%s/%s/*' % (path, data_type))
+        path = glob('./datasets/train/%s/%s/*' % (self.name, data_type))
 
         batch_images = np.random.choice(path, size=batch_size)
 
