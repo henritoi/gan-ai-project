@@ -71,7 +71,7 @@ def __train(dataset, epochs=250):
 def __test(dataset):
     print('Test with the latest model trained')
     gan = CycleGan(dataset)
-    gan.test()
+    gan.test(epoch="finished")
     print("Testing complete")
 def __initialize_data():
     print('Downloading the training datasets...')
