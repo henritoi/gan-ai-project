@@ -80,7 +80,7 @@ def __initialize_args():
     parser = argparse.ArgumentParser(description='CycleGAN')
     __add_boolean_arg(parser, 'list', help='List downloaded datasets')
     parser.add_argument('-m', dest='method', help='Select metdod to be used')
-    parser.add_argument('-e', dest='epochs', type=int, help='Number of epochs', default=250)
+    parser.add_argument('-e', dest='epochs', type=int, help='Number of epochs (default 250)', default=250)
     parser.add_argument('--data', dest='dataset', help='Select dataset to be used')
     __add_boolean_arg(parser, 'init', help='Download the training data and pictures of Kuopio')
 
