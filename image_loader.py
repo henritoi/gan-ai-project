@@ -12,7 +12,7 @@ class ImageLoader():
 
     def load_images(self, domain, batch_size=1, test=False):
         data_type = "train%s" % domain if not test else "test%s" % domain
-        path = glob('./datasets/train/%s/%s/*' % (path, data_type))
+        path = glob('./datasets/train/%s/%s/*' % (self.name, data_type))
 
         batch_images = np.random.choice(path, size=batch_size)
 
@@ -41,7 +41,7 @@ class ImageLoader():
         return images
 
     def load_batch(self, batch_size=1, test=False):
-        data_type = "train" if not is_testing else "val"
+        data_type = "train" if not test else "val"
 
         path_A = glob('./datasets/train/%s/%sA/*' % (self.dataset_name, data_type))
         path_B = glob('./datasets/train/%s/%sB/*' % (self.dataset_name, data_type))
@@ -52,11 +52,11 @@ class ImageLoader():
         path_A = np.random.choice(path_A, total_samples, replace=False)
         path_B = np.random.choice(path_B, total_samples, replace=False)
 
-        progress = Progress(number_of_batches - 1)
+        progress = Progress(self.number_of_batches - 1)
 
         for index in range(self.number_of_batches - 1):
-            batch_A = path_A[index * batch_size: (i + 1) * batch_size]
-            batch_B = path_B[index * batch_size: (i + 1) * batch_size]
+            batch_A = path_A[index * batch_size: (index + 1) * batch_size]
+            batch_B = path_B[index * batch_size: (index + 1) * batch_size]
             images_A, images_B = [], []
             for image_A, image_B in zip(batch_A, batch_B):
                 imageA = self.imread(image_A)

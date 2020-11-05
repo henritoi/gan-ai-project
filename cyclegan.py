@@ -23,7 +23,7 @@ from PIL import Image
 
 from glob import glob
 
-'''Lähin kirjottamaan tätä nyt käyttäen esimerkkinä tuota copypaste koodia'''
+# Lähin kirjottamaan tätä nyt käyttäen esimerkkinä tuota copypaste koodia
 
 
 class CycleGan():
@@ -172,11 +172,11 @@ class CycleGan():
                 # train discriminators
                 real_dA_loss = self.disc_A.train_on_batch(imageA, valid)
                 fake_dA_loss = self.disc_A.train_on_batch(f_A, fake)
-                loss_dA = np.add(real_dA_loss, fake_dA_loss)
+                loss_dA = 0.5 * np.add(real_dA_loss, fake_dA_loss)
 
                 real_dB_loss = self.disc_B.train_on_batch(imageB, valid)
                 fake_dB_loss = self.disc_B.train_on_batch(f_B, fake)
-                loss_dB = np.add(real_dB_loss, fake_dB_loss)
+                loss_dB = 0.5* np.add(real_dB_loss, fake_dB_loss)
 
                 # training the generator with the sample pictures
                 generator_loss = self.comb.train_on_batch([imageA, imageB],
