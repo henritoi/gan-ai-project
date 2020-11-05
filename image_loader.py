@@ -1,8 +1,11 @@
 import scipy
+import scipy.misc
 import imageio
 from glob import glob
 import numpy as np
 from progress import Progress
+
+from PIL import Image
 
 
 class ImageLoader():
@@ -18,7 +21,7 @@ class ImageLoader():
 
         images = []
 
-        progress = Progress(len(batch_size))
+        progress = Progress(batch_size)
 
         for index, image_path in enumerate(batch_images, start=1):
             image = self.read_image(image_path)
@@ -43,8 +46,8 @@ class ImageLoader():
     def load_batch(self, batch_size=1, test=False):
         data_type = "train" if not test else "val"
 
-        path_A = glob('./datasets/train/%s/%sA/*' % (self.dataset_name, data_type))
-        path_B = glob('./datasets/train/%s/%sB/*' % (self.dataset_name, data_type))
+        path_A = glob('./datasets/train/%s/%sA/*' % (self.name, data_type))
+        path_B = glob('./datasets/train/%s/%sB/*' % (self.name, data_type))
 
         self.number_of_batches = int(min(len(path_A), len(path_B)) / batch_size)
         total_samples = self.number_of_batches * batch_size
@@ -62,8 +65,10 @@ class ImageLoader():
                 imageA = self.imread(image_A)
                 imageB = self.imread(image_B)
 
-                image_A = scipy.misc.imresize(image_A, self.resolution)
-                image_B = scipy.misc.imresize(image_B, self.resolution)
+                #image_A = Image.fromarray(imageA).resize(128, 128)
+                #image_B = Image.fromarray(imageB).resize(128, 128)
+                image_A = scipy.misc.imresize(imageA, self.resolution)
+                image_B = scipy.misc.imresize(imageB, self.resolution)
 
                 if not test and np.random.random() > 0.5:
                     image_A = np.fliplr(image_A)
@@ -72,12 +77,12 @@ class ImageLoader():
                 images_A.append(image_A)
                 images_B.append(image_B)
 
-            imgs_A = np.array(imgs_A) / 127.5 - 1.
-            imgs_B = np.array(imgs_B) / 127.5 - 1.
+            imgs_A = np.array(images_A) / 127.5 - 1.
+            imgs_B = np.array(images_B) / 127.5 - 1.
 
             progress.update(index, 'Loading images')
 
-            yield images_A, images_B
+            yield imgs_A, imgs_B
         progress.stop()
 
     def read_image(self, path):
@@ -89,3 +94,5 @@ class ImageLoader():
         image = image / 256.5 - 1.
 
         return image[np.newaxis, :, :, :]
+    def imread(self, path):
+        return imageio.imread(path, pilmode='RGB').astype(np.float)
