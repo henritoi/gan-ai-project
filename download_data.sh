@@ -1,5 +1,9 @@
 #! /bin/bash
 
+if [ -d "datasets" ]; then
+    rm -rf datasets
+fi
+
 if [ ! -d "datasets" ]; then
     mkdir datasets
 fi
@@ -14,17 +18,17 @@ if [ ! -d "datasets/final" ]; then
 fi
 
 declare -a training_sets=(
-    "ae_photos"
-    "apple2orange"
-    "summer2winter_yosemite"
-    "horse2zebra"
+    #"ae_photos"
+    #"apple2orange"
+    #"summer2winter_yosemite"
+    #"horse2zebra"
     "monet2photo"
     "cezanne2photo"
     "ukiyoe2photo"
-    "vangpgh2photo"
-    "maps"
-    "facades"
-    "iphone2dslr_flower"
+    "vangogh2photo"
+    #"maps"
+    #"facades"
+    #"iphone2dslr_flower"
 )
 
 
