@@ -44,7 +44,8 @@ def __execute_command(command=None, dataset=None, epochs=250):
         command = __get_command_selection()
 
     if dataset == None:
-        dataset = __get_dataset_selection() 
+        if command == 'train':
+            dataset = __get_dataset_selection() 
     else:
         if not os.path.isdir('datasets/%s' % dataset):
             print('[Error]: Dataset "%s" was not found!' % (dataset))
@@ -68,7 +69,7 @@ def __train(dataset, epochs=250):
     gan.train(epochs=epochs, batch_size=1, sample_interval=1, saving_interval=30)
     print("Training complete")
 def __test(dataset):
-    print('Test with %s' % (dataset.capitalize()))
+    print('Test with the latest model trained')
     gan = CycleGan(dataset)
     gan.test()
     print("Testing complete")
