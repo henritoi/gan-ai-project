@@ -1,13 +1,15 @@
 # coding: utf-8
 import scipy
+import scipy.misc
 import tensorflow as tf
 import tensorflow_addons as tfa
-from keras.layers import *
-from keras.layers.advanced_activations import LeakyReLU
-from keras.models import Sequential, Model
-from keras.optimizers import Adam
+from tensorflow.keras.layers import *
+from tensorflow.keras.layers import LeakyReLU
+#from keras.layers.advanced_activations import LeakyReLU
+from tensorflow.keras.models import Sequential, Model
+from tensorflow.keras.optimizers import Adam
 from keras.models import model_from_json
-from keras.models import load_model
+from tensorflow.keras.models import load_model
 from keras.models import save_model
 
 from keras.initializers import RandomNormal
@@ -38,7 +40,7 @@ class CycleGan():
 
         # initialize image_loader
         self.data_name = data
-        self.image_loader = ImageLoader(name=self.data_name, resolution=(self.rows, self.cols))
+        self.loader = ImageLoader(name=self.data_name, resolution=(self.rows, self.cols))
 
         # Calculate output shape
 
@@ -94,7 +96,7 @@ class CycleGan():
 
         # combined model
 
-        self.comb = Model(input=[image_A, image_B], output=[val_A, val_B, recon_A, recon_B, image_A_id, image_B_id])
+        self.comb = Model(inputs=[image_A, image_B], outputs=[val_A, val_B, recon_A, recon_B, image_A_id, image_B_id])
 
         self.comb.compile(loss=['mse', 'mse', 'mse', 'mse', 'mse', 'mse'],
                           loss_weights=[1, 1, self.lambda_cycle, self.lambda_cycle, self.lambda_id, self.lambda_id],
@@ -112,7 +114,7 @@ class CycleGan():
             u = UpSampling2D(size=2)(layer_input)
             u = Conv2D(filter, kernel_size=f_size, strides=1, padding='same', activation='relu')(u)
             u = tfa.layers.InstanceNormalization()(u)
-            u = Concatenate()(u, skip_input)
+            u = Concatenate()([u, skip_input])
             return u
 
         # input image
@@ -163,8 +165,8 @@ class CycleGan():
         valid = np.ones((batch_size,) + self.discriminator_patch)
         fake = np.zeros((batch_size,) + self.discriminator_patch)
 
-        for epoch in range(epochs):
-            for batch_index, (imageA, imageB) in enumerate(self.image_loader(batch_size)):
+        for epoch in range(1, epochs):
+            for batch_index, (imageA, imageB) in enumerate(self.loader.load_batch(batch_size)):
 
                 # translate images into domains, fake images
                 f_B = self.generate_AB.predict(imageA)
@@ -184,8 +186,8 @@ class CycleGan():
                                                           [valid, valid, imageA, imageB, imageA, imageB])
 
                 if batch_index % print_interval == 0:
-                    print("Epoch: %d / %d total loss on images A: %f Total loss on images B: %f" % (
-                    epoch, epochs, loss_dA, loss_dB))
+                    print("Epoch: %d / %d" % (
+                    epoch, epochs))
 
                 if epoch % saving_interval == 0:
                     self.epoch = epoch
@@ -194,11 +196,11 @@ class CycleGan():
                         os.makedirs(path)
                     self.disc_A.save_weights(path + "/discriminatorA_weights.h5")
                     self.disc_B.save_weights(path + "/discriminatorA_weights.h5")
-                    self.disc_A.save_model(path + "/discriminatorA_model.h5")
-                    self.disc_B.save_model(path + "/discriminatorB_model.h5")
+                    self.disc_A.save(path + "/discriminatorA_model.h5")
+                    self.disc_B.save(path + "/discriminatorB_model.h5")
 
-                    self.generate_AB.save_model(path + "/generatorAB_model.h5")
-                    self.generate_BA.save_model(path + "/generatorBA_model.h5")
+                    self.generate_AB.save(path + "/generatorAB_model.h5")
+                    self.generate_BA.save(path + "/generatorBA_model.h5")
                     self.generate_AB.save_weights(path + "/generatorAB_weights.h5")
                     self.generate_BA.save_weights(path + "/generatorBA_weights.h5")
                 if epoch % sample_interval == 0:
@@ -210,11 +212,11 @@ class CycleGan():
             os.makedirs(path)
         self.disc_A.save_weights(path + "/discriminatorA_weights.h5")
         self.disc_B.save_weights(path + "/discriminatorA_weights.h5")
-        self.disc_A.save_model(path + "/discriminatorA_model.h5")
-        self.disc_B.save_model(path + "/discriminatorB_model.h5")
+        self.disc_A.save(path + "/discriminatorA_model.h5")
+        self.disc_B.save(path + "/discriminatorB_model.h5")
 
-        self.generate_AB.save_model(path + "/generatorAB_model.h5")
-        self.generate_BA.save_model(path + "/generatorBA_model.h5")
+        self.generate_AB.save(path + "/generatorAB_model.h5")
+        self.generate_BA.save(path + "/generatorBA_model.h5")
         self.generate_AB.save_weights(path + "/generatorAB_weights.h5")
         self.generate_BA.save_weights(path + "/generatorBA_weights.h5")
 
@@ -236,17 +238,17 @@ class CycleGan():
 
         for image_path in image_paths:
             filename = os.path.basename(image_path)
-            imageB = self.image_loader(path=image_path)
+            imageB = self.loader(path=image_path)
             fakeA = self.generate_BA.predict(imageB)
 
             scipy.misc.imsave('/testing/fakes/%s/%s' % (self.data_name, filename), arr=fakeA)
 
     def create_samples(self, epoch):
-        os.makedirs('samples/%s' % self.data_name)
+        os.makedirs('samples/%s' % self.data_name, exist_ok=True)
 
         # load all the images related to the domains
-        images_A = self.image_loader.load_images(domain="A", test=True)
-        images_B = self.image_loader.load_images(domain="B", test=True)
+        images_A = self.loader.load_images(domain="A",batch_size=1, test=True)
+        images_B = self.loader.load_images(domain="B",batch_size=1, test=True)
 
         # generate fake images
         f_B = self.generate_AB.predict(images_A)
@@ -272,6 +274,7 @@ class CycleGan():
                 ax[i, j].set_title(titles[j])
                 ax[i, j].axis('off')
                 index += 1
-        fig.savefig("sample_images/%s/%d" % (self.data_name, epoch))
+                print(index)
+        fig.savefig("samples/%s/%d.png" % (self.data_name, epoch))
         print("Sample images have been saved")
         plt.close()
