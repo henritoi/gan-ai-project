@@ -30,9 +30,9 @@ class InputHelper():
                 print('[%d]: %s' % (index, option.capitalize()))
             
             if not self.default == None:
-                selection = raw_input('Select option [%d]: ' % (self.default))
+                selection = input('Select option [%d]: ' % (self.default))
             else:
-                selection = raw_input('Select option: ')
+                selection = input('Select option: ')
             
             if selection == '':
                 selection = self.default

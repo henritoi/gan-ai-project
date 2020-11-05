@@ -1,3 +1,4 @@
+# coding: utf-8
 import scipy
 import tensorflow as tf
 import tensorflow_addons as tfa
