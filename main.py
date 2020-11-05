@@ -19,8 +19,15 @@ print("""\n\
 def main():
     args = __initialize_args()
 
+    if args.list:
+        __print_local_datasets()
+        return
+
     if args.init:
         __initialize_data()
+        __print_local_datasets()
+        return
+
     elif not os.path.isdir('datasets'):
         print('[WARNING]: You will need to download datasets to datasets folder!')
         print('You can initialize datasets using --init command or by running the download_data.sh script.\n')
@@ -39,15 +46,14 @@ def __execute_command(command=None, dataset=None):
         dataset = __get_dataset_selection() 
     else:
         if not os.path.isdir('datasets/%s' % dataset):
-            print('[Error]: Dataset "%s" was not fould!' % (dataset))
+            print('[Error]: Dataset "%s" was not found!' % (dataset))
             print('You can initialize datasets using --init command or by running the download_data.sh script.\n')
 
             selection = input('Would you like to reinitialize datasets [Y/n]: ')
             if selection.lower() == 'y':
                 __initialize_data()
             else:
-                print('[Error]: No valid dataset found.')
-                return
+                dataset = __get_dataset_selection()
 
     if command == 'train':
         __train(dataset)
@@ -67,16 +73,17 @@ def __initialize_data():
 
 def __initialize_args():
     parser = argparse.ArgumentParser(description='CycleGAN')
-    parser.add_argument('-e', dest='execute', help='Select execution')
-    parser.add_argument('--data', dest='dataset', help='Select execution')
-    __add_boolean_arg(parser, 'init', help='Download the training data')
+    __add_boolean_arg(parser, 'list', help='List downloaded datasets')
+    parser.add_argument('-e', dest='execute', help='Select metdod to be used')
+    parser.add_argument('--data', dest='dataset', help='Select dataset to be used')
+    __add_boolean_arg(parser, 'init', help='Download the training data and pictures of Kuopio')
 
     args = parser.parse_args()
     return args
 
 def __add_boolean_arg(parser, name, help='', default=False, hasInverted=False):
     group = parser.add_mutually_exclusive_group(required=False)
-    group.add_argument('--' + name, dest=name, action='store_true')
+    group.add_argument('--' + name, dest=name, action='store_true', help=help)
 
     if hasInverted:
         group.add_argument('--no-' + name, dest=name, action='store_true')
@@ -89,10 +96,29 @@ def __get_command_selection():
     return command
 
 def __get_dataset_selection():
-    input_helper = InputHelper(help='\nSelect training dataset to be used:', options=['monet2photo', 'cezanne2photo', 'ukiyoe2photo', 'vangogh2photo' ], default=0)
+    downloaded_datasets = __get_downloaded_datasets()
+    input_helper = InputHelper(help='\nSelect training dataset to be used:', options=downloaded_datasets, default=0)
     dataset = input_helper.get_output()
     return dataset
 
+def __print_local_datasets():
+    datasets = __get_downloaded_datasets()
+    if len(datasets) > 0:
+        print('List of local datasets:')
+        for index, item in enumerate(datasets):
+            print('[%d]: %s' % (index, item.capitalize()))
+        print('')
+    else:
+        print('No datasets found')
+
+def __get_downloaded_datasets():
+    ret = []
+    if os.path.isdir('datasets/train'):
+        datasets = os.listdir('datasets/train')
+        for item in os.listdir('datasets/train'):
+            if os.path.isdir('datasets/train/%s' % (item)):
+                ret.append(item)
+    return ret
 
 if __name__ == '__main__':
     main()
