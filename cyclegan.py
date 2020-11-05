@@ -200,6 +200,8 @@ class CycleGan():
                     self.generate_BA.save_model(path + "/generatorBA_model.h5")
                     self.generate_AB.save_weights(path + "/generatorAB_weights.h5")
                     self.generate_BA.save_weights(path + "/generatorBA_weights.h5")
+                if epoch % sample_interval == 0:
+                    self.create_samples(epoch)
 
         self.epoch = "finished"
         path = "saved_model/" + self.data_name + "/epoch_" + str(self.epoch)
@@ -236,7 +238,7 @@ class CycleGan():
             imageB = self.image_loader(path=image_path)
             fakeA = self.generate_BA.predict(imageB)
 
-            scipy.misc.imsave('/testing/fakes/%s/%s' % self.data_name, filename)
+            scipy.misc.imsave('/testing/fakes/%s/%s' % (self.data_name, filename), arr=fakeA)
 
     def create_samples(self, epoch):
         os.makedirs('samples/%s' % self.data_name)
