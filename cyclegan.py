@@ -18,7 +18,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import sys
 from image_loader import ImageLoader
-
+import imageio
 import numpy as np
 import os
 import time
@@ -181,13 +181,16 @@ class CycleGan():
                 fake_dB_loss = self.disc_B.train_on_batch(f_B, fake)
                 loss_dB = 0.5* np.add(real_dB_loss, fake_dB_loss)
 
+                #total loss:
+                loss_D = 0.5 * (np.add(loss_dA, loss_dB))
+
                 # training the generator with the sample pictures
                 generator_loss = self.comb.train_on_batch([imageA, imageB],
                                                           [valid, valid, imageA, imageB, imageA, imageB])
 
                 if batch_index % print_interval == 0:
-                    print("Epoch: %d / %d" % (
-                    epoch, epochs))
+                    print("Training in Epoch: %d / %d discriminator loss: %f discriminator acc: %3d%%" % (
+                    epoch, epochs, loss_D[0], 100*loss_D[1]))
 
             if epoch % saving_interval == 0:
                 self.epoch = epoch
@@ -211,7 +214,7 @@ class CycleGan():
         if not os.path.exists(path):
             os.makedirs(path)
         self.disc_A.save_weights(path + "/discriminatorA_weights.h5")
-        self.disc_B.save_weights(path + "/discriminatorA_weights.h5")
+        self.disc_B.save_weights(path + "/discriminatorB_weights.h5")
         self.disc_A.save(path + "/discriminatorA_model.h5")
         self.disc_B.save(path + "/discriminatorB_model.h5")
 
@@ -229,19 +232,25 @@ class CycleGan():
         self.disc_A.load_weights(path + "/discriminatorA_weights.h5")
         self.disc_B.load_weights(path + "/discriminatorB_weights.h5")
 
-        self.generate_AB = load_model(path + "/discriminatorA_model.h5")
-        self.generate_BA = load_model(path + "/discriminatorB_model.h5")
-        self.generate_AB.load_weights(path + "/discriminatorA_weights.h5")
-        self.generate_BA.load_weights(path + "/discriminatorB_weights.h5")
+        self.generate_AB = load_model(path + "/generatorAB_model.h5")
+        self.generate_BA = load_model(path + "/generatorBA_model.h5")
+        self.generate_AB.load_weights(path + "/generatorAB_weights.h5")
+        self.generate_BA.load_weights(path + "/generatorBA_weights.h5")
 
-        image_paths = glob('./testing/original/*')
-
+        image_paths = glob('./datasets/final/*')
         for image_path in image_paths:
             filename = os.path.basename(image_path)
-            imageB = self.loader(path=image_path)
+            print(image_path)
+            imageB = self.loader.load_image(path=image_path)
             fakeA = self.generate_BA.predict(imageB)
+            testA = fakeA[0, :, :, :]
+            print()
+            plt.imshow(testA)
+            plt.axis('off')
+            plt.title(" Faked %s to %s style" %(filename, self.data_name))
+            plt.savefig('datasets/fakes/%s' % (filename))
+            #imageio.imwrite('/datasets/fakes/%s' % (filename), fakeA)
 
-            scipy.misc.imsave('/testing/fakes/%s/%s' % (self.data_name, filename), arr=fakeA)
 
     def create_samples(self, epoch):
         os.makedirs('samples/%s' % self.data_name, exist_ok=True)
@@ -274,7 +283,6 @@ class CycleGan():
                 ax[i, j].set_title(titles[j])
                 ax[i, j].axis('off')
                 index += 1
-                print(index)
         fig.savefig("samples/%s/%d.png" % (self.data_name, epoch))
         print("Sample images have been saved")
         plt.close()
