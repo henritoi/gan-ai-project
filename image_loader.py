@@ -69,7 +69,6 @@ class ImageLoader():
                 #image_B = Image.fromarray(imageB).resize(128, 128)
                 image_A = scipy.misc.imresize(imageA, self.resolution)
                 image_B = scipy.misc.imresize(imageB, self.resolution)
-
                 if not test and np.random.random() > 0.5:
                     image_A = np.fliplr(image_A)
                     image_B = np.fliplr(image_B)
@@ -90,9 +89,11 @@ class ImageLoader():
 
     def load_image(self, path):
         image = self.read_image(path)
-        iamge = scipy.misc.imresize(image, self.resolution)
+        image = scipy.misc.imresize(image, self.resolution)
         image = image / 256.5 - 1.
 
         return image[np.newaxis, :, :, :]
+
+
     def imread(self, path):
         return imageio.imread(path, pilmode='RGB').astype(np.float)
