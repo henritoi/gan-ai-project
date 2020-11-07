@@ -43,6 +43,10 @@ def __execute_command(command=None, dataset=None, epochs=250):
     if command == None:
         command = __get_command_selection()
 
+    if command == 'list':
+        __print_local_datasets()
+        return
+
     if dataset == None:
         if command == 'train' or 'test':
             dataset = __get_dataset_selection() 
@@ -98,7 +102,7 @@ def __add_boolean_arg(parser, name, help='', default=False, hasInverted=False):
     parser.set_defaults(**{name:default})
 
 def __get_command_selection():
-    input_helper = InputHelper(help='\nSelect command to be used:', options=['train', 'test'], default=0)
+    input_helper = InputHelper(help='\nSelect command to be used:', options=['train', 'test', 'list'], default=0)
     command = input_helper.get_output()
     return command
 
