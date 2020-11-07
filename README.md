@@ -6,13 +6,15 @@
     ╚═════╝   ╚═╝    ╚═════╝╚══════╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═══╝
 *Henri Toivanen, Hermanni Rautiainen, Roope Korhonen, Antti Auvinen*
 
-## Installation
+## Get started
 
 Clone project:
 ```bash
   git clone git@github.com:henritoi/gan-ai-project.git
   
   cd gan-ai-project
+  
+  python3 main.py
 ```
 
 ## Download datasets
