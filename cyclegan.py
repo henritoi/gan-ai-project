@@ -5,24 +5,15 @@ import tensorflow as tf
 import tensorflow_addons as tfa
 from tensorflow.keras.layers import *
 from tensorflow.keras.layers import LeakyReLU
-#from keras.layers.advanced_activations import LeakyReLU
 from tensorflow.keras.models import Sequential, Model
 from tensorflow.keras.optimizers import Adam
-from keras.models import model_from_json
 from tensorflow.keras.models import load_model
 from keras.models import save_model
 
-from keras.initializers import RandomNormal
-import datetime
-import matplotlib
 import matplotlib.pyplot as plt
-import sys
 from image_loader import ImageLoader
-import imageio
 import numpy as np
 import os
-import time
-from PIL import Image
 
 from glob import glob
 
