@@ -26,9 +26,6 @@ from PIL import Image
 
 from glob import glob
 
-# Lähin kirjottamaan tätä nyt käyttäen esimerkkinä tuota copypaste koodia
-
-
 class CycleGan():
     # data is the name of the dataset
     def __init__(self, data):
@@ -94,7 +91,7 @@ class CycleGan():
         val_A = self.disc_A(f_A)
         val_B = self.disc_B(f_B)
 
-        # combined model
+        # combined model to fool discriminators
 
         self.comb = Model(inputs=[image_A, image_B], outputs=[val_A, val_B, recon_A, recon_B, image_A_id, image_B_id])
 
@@ -176,6 +173,8 @@ class CycleGan():
                 real_dA_loss = self.disc_A.train_on_batch(imageA, valid)
                 fake_dA_loss = self.disc_A.train_on_batch(f_A, fake)
                 loss_dA = 0.5 * np.add(real_dA_loss, fake_dA_loss)
+                print(real_dA_loss)
+
 
                 real_dB_loss = self.disc_B.train_on_batch(imageB, valid)
                 fake_dB_loss = self.disc_B.train_on_batch(f_B, fake)
@@ -189,8 +188,8 @@ class CycleGan():
                                                           [valid, valid, imageA, imageB, imageA, imageB])
 
                 if batch_index % print_interval == 0:
-                    print("Training in Epoch: %d / %d discriminator loss: %f discriminator acc: %3d%%" % (
-                    epoch, epochs, loss_D[0], 100*loss_D[1]))
+                    print("Training in Epoch: %d / %d discriminator loss: %f  Generator loss: %05f" % (
+                    epoch, epochs, loss_D[0],np.mean(generator_loss[1:3])))
 
             if epoch % saving_interval == 0:
                 self.epoch = epoch

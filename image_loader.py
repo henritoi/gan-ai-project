@@ -90,7 +90,7 @@ class ImageLoader():
     def load_image(self, path):
         image = self.read_image(path)
         image = scipy.misc.imresize(image, self.resolution)
-        image = image / 256.5 - 1.
+        image = (image / 256.5) - 1.
 
         return image[np.newaxis, :, :, :]
 
