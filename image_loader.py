@@ -62,8 +62,8 @@ class ImageLoader():
             batch_B = path_B[index * batch_size: (index + 1) * batch_size]
             images_A, images_B = [], []
             for image_A, image_B in zip(batch_A, batch_B):
-                imageA = self.imread(image_A)
-                imageB = self.imread(image_B)
+                imageA = self.read_image(image_A)
+                imageB = self.read_image(image_B)
 
                 #image_A = Image.fromarray(imageA).resize(128, 128)
                 #image_B = Image.fromarray(imageB).resize(128, 128)
@@ -90,10 +90,7 @@ class ImageLoader():
     def load_image(self, path):
         image = self.read_image(path)
         image = scipy.misc.imresize(image, self.resolution)
-        image = image / 256.5 - 1.
+        image = (image / 256.5) - 1.
 
         return image[np.newaxis, :, :, :]
 
-
-    def imread(self, path):
-        return imageio.imread(path, pilmode='RGB').astype(np.float)
