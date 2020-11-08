@@ -164,7 +164,7 @@ class CycleGan():
                 real_dA_loss = self.disc_A.train_on_batch(imageA, valid)
                 fake_dA_loss = self.disc_A.train_on_batch(f_A, fake)
                 loss_dA = 0.5 * np.add(real_dA_loss, fake_dA_loss)
-                print(real_dA_loss)
+                # print(real_dA_loss)
 
 
                 real_dB_loss = self.disc_B.train_on_batch(imageB, valid)
